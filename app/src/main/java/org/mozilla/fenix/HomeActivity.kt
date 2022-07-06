@@ -217,6 +217,7 @@ open class HomeActivity : LocaleAwareAppCompatActivity(), NavHostActivity {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ProfilerMarkers.addListenerForOnGlobalLayout(components.core.engine, this, binding.root)
+        methodForStartupRegression()
 
         // Must be after we set the content view
         if (isVisuallyComplete) {
@@ -300,6 +301,16 @@ open class HomeActivity : LocaleAwareAppCompatActivity(), NavHostActivity {
             moveTaskToBack(false)
             startActivity(Intent(this, this::class.java).setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT))
         }
+    }
+
+    private fun methodForStartupRegression() {
+        repeat(3) {
+            doSomethingSlow()
+        }
+    }
+
+    private fun doSomethingSlow() {
+        Thread.sleep(100)
     }
 
     private fun startupTelemetryOnCreateCalled(safeIntent: SafeIntent) {
