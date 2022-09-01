@@ -240,6 +240,10 @@ class HomeFragment : Fragment() {
         )
 
         val blocklistHandler = BlocklistHandler(components.settings)
+        // Regression in custom flow
+        repeat(2) {
+            Thread.sleep(2000)
+        }
         homeFragmentStore = StoreProvider.get(this) {
             HomeFragmentStore(
                 initialState = HomeFragmentState(

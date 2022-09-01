@@ -107,6 +107,7 @@ android {
             pseudoLocalesEnabled true
         }
         nightly releaseTemplate >> {
+            signingConfig signingConfigs.debug
             applicationIdSuffix ".fenix"
             buildConfigField "boolean", "USE_RELEASE_VERSIONING", "true"
             def deepLinkSchemeValue = "fenix-nightly"
