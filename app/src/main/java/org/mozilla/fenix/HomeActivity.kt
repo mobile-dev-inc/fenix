@@ -15,12 +15,7 @@ import android.os.StrictMode
 import android.os.SystemClock
 import android.text.format.DateUtils
 import android.util.AttributeSet
-import android.view.ActionMode
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewConfiguration
+import android.view.*
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
@@ -34,12 +29,8 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import mozilla.appservices.places.BookmarkRoot
 import mozilla.components.browser.state.action.ContentAction
 import mozilla.components.browser.state.search.SearchEngine
@@ -78,35 +69,17 @@ import org.mozilla.fenix.components.metrics.BreadcrumbsRecorder
 import org.mozilla.fenix.components.metrics.Event
 import org.mozilla.fenix.databinding.ActivityHomeBinding
 import org.mozilla.fenix.exceptions.trackingprotection.TrackingProtectionExceptionsFragmentDirections
-import org.mozilla.fenix.ext.alreadyOnDestination
-import org.mozilla.fenix.ext.breadcrumb
-import org.mozilla.fenix.ext.components
-import org.mozilla.fenix.ext.metrics
-import org.mozilla.fenix.ext.nav
-import org.mozilla.fenix.ext.setNavigationIcon
-import org.mozilla.fenix.ext.settings
+import org.mozilla.fenix.ext.*
+import org.mozilla.fenix.home.EventTracker
 import org.mozilla.fenix.home.HomeFragmentDirections
-import org.mozilla.fenix.home.intent.CrashReporterIntentProcessor
-import org.mozilla.fenix.home.intent.DefaultBrowserIntentProcessor
-import org.mozilla.fenix.home.intent.HomeDeepLinkIntentProcessor
-import org.mozilla.fenix.home.intent.OpenBrowserIntentProcessor
-import org.mozilla.fenix.home.intent.OpenSpecificTabIntentProcessor
-import org.mozilla.fenix.home.intent.SpeechProcessingIntentProcessor
-import org.mozilla.fenix.home.intent.StartSearchIntentProcessor
+import org.mozilla.fenix.home.intent.*
 import org.mozilla.fenix.library.bookmarks.BookmarkFragmentDirections
 import org.mozilla.fenix.library.bookmarks.DesktopFolders
 import org.mozilla.fenix.library.history.HistoryFragmentDirections
 import org.mozilla.fenix.library.historymetadata.HistoryMetadataGroupFragmentDirections
 import org.mozilla.fenix.library.recentlyclosed.RecentlyClosedFragmentDirections
 import org.mozilla.fenix.onboarding.DefaultBrowserNotificationWorker
-import org.mozilla.fenix.perf.MarkersActivityLifecycleCallbacks
-import org.mozilla.fenix.perf.MarkersFragmentLifecycleCallbacks
-import org.mozilla.fenix.perf.Performance
-import org.mozilla.fenix.perf.PerformanceInflater
-import org.mozilla.fenix.perf.ProfilerMarkers
-import org.mozilla.fenix.perf.StartupPathProvider
-import org.mozilla.fenix.perf.StartupTimeline
-import org.mozilla.fenix.perf.StartupTypeTelemetry
+import org.mozilla.fenix.perf.*
 import org.mozilla.fenix.search.SearchDialogFragmentDirections
 import org.mozilla.fenix.session.PrivateNotificationService
 import org.mozilla.fenix.settings.SettingsFragmentDirections
@@ -217,6 +190,7 @@ open class HomeActivity : LocaleAwareAppCompatActivity(), NavHostActivity {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ProfilerMarkers.addListenerForOnGlobalLayout(components.core.engine, this, binding.root)
+        leak()
 
         // Must be after we set the content view
         if (isVisuallyComplete) {
@@ -292,6 +266,10 @@ open class HomeActivity : LocaleAwareAppCompatActivity(), NavHostActivity {
             MarkersActivityLifecycleCallbacks.MARKER_NAME, startTimeProfiler, "HomeActivity.onCreate"
         )
         StartupTimeline.onActivityCreateEndHome(this) // DO NOT MOVE ANYTHING BELOW HERE.
+    }
+
+    private fun leak() {
+        EventTracker.getInstance(this).log("HomeActivity opened")
     }
 
     private fun checkAndExitPiP() {
