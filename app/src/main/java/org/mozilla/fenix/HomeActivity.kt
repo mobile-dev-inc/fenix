@@ -125,8 +125,8 @@ import org.mozilla.fenix.theme.ThemeManager
 import org.mozilla.fenix.trackingprotection.TrackingProtectionPanelDialogFragmentDirections
 import org.mozilla.fenix.utils.BrowsersCache
 import org.mozilla.fenix.utils.Settings
+import java.lang.RuntimeException
 import java.lang.ref.WeakReference
-
 /**
  * The main activity of the application. The application is primarily a single Activity (this one)
  * with fragments switching out to display different views. The most important views shown here are the:
@@ -232,6 +232,7 @@ open class HomeActivity : LocaleAwareAppCompatActivity(), NavHostActivity {
             it.start()
         }
 
+
         // Unless the activity is recreated, navigate to home first (without rendering it)
         // to add it to the back stack.
         if (savedInstanceState == null) {
@@ -292,6 +293,11 @@ open class HomeActivity : LocaleAwareAppCompatActivity(), NavHostActivity {
             MarkersActivityLifecycleCallbacks.MARKER_NAME, startTimeProfiler, "HomeActivity.onCreate"
         )
         StartupTimeline.onActivityCreateEndHome(this) // DO NOT MOVE ANYTHING BELOW HERE.
+        throwAppStartupCrash()
+    }
+
+    private fun throwAppStartupCrash() {
+        throw RuntimeException("Test crash here")
     }
 
     private fun checkAndExitPiP() {
@@ -1047,3 +1053,4 @@ open class HomeActivity : LocaleAwareAppCompatActivity(), NavHostActivity {
         const val PWA_RECENTLY_USED_THRESHOLD = DateUtils.DAY_IN_MILLIS * 30L
     }
 }
+

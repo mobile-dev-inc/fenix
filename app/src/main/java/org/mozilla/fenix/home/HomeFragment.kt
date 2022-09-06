@@ -135,6 +135,7 @@ import org.mozilla.fenix.utils.ToolbarPopupWindow
 import org.mozilla.fenix.utils.allowUndo
 import org.mozilla.fenix.wallpapers.WallpaperManager
 import org.mozilla.fenix.whatsnew.WhatsNew
+import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 import kotlin.math.min
 
@@ -413,7 +414,12 @@ class HomeFragment : Fragment() {
             MarkersFragmentLifecycleCallbacks.MARKER_NAME, profilerStartTime, "HomeFragment.onCreateView",
         )
 
+        throwError()
         return binding.root
+    }
+
+    private fun throwError() {
+        throw RuntimeException("Test crash in custom flow")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
